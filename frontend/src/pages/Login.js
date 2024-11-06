@@ -16,14 +16,8 @@ function Login() {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { email, password }
       );
-      console.log("Full response:", response);
 
       const { token, userId, role, name } = response;
 
@@ -37,6 +31,7 @@ function Login() {
       setEmail("");
       setPassword("");
       navigate("/home");
+      window.location.reload()
     } catch (error) {
       console.error("Error during login request:", error);
       console.error("Error details:", error.response?.data);
