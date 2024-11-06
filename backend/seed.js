@@ -12,7 +12,8 @@ const Order = require('./models/Order');
 
 // Kết nối đến MongoDB
 mongoose
-    .connect('mongodb+srv://yoga:8bpSXd1qKwBM1RJ0@yoga.v47pt.mongodb.net/dbdev?retryWrites=true&w=majority&appName=Yoga', {
+    .connect(process.env.MONGO_URI, {
+
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })

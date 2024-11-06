@@ -7,6 +7,8 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const { verifyToken, verifyRole } = require('./controllers/authMiddleware');
+const sectionRoutes = require('./routes/sectionRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 dotenv.config();
 
@@ -24,7 +26,6 @@ mongoose
     .catch((err) => console.log('Error connecting to MongoDB:', err));
 
 
-app.use('/api/course', courseRoutes);
 
 // Route không yêu cầu xác thực
 app.use('/api/auth', authRoutes);
@@ -38,6 +39,9 @@ app.use('/api/users', userRoutes);
 
 // Route cho cả admin và user
 
+app.use('/api/course', courseRoutes);
+app.use('/api/section', sectionRoutes);
+app.use('/api/category', categoryRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
