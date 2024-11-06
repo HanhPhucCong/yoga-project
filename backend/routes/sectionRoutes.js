@@ -4,6 +4,7 @@ const sectionController = require('../controllers/sectionController');
 
 // Các route cho Section
 router.get('/getAll', sectionController.getAll);
+router.get('/getOne/:id', sectionController.getOne);
 router.post('/create', sectionController.create);
 router.put('/update/:id', sectionController.update);
 router.delete('/delete/:id', sectionController.deleteSection);

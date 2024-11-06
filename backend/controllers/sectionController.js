@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const Section = require('../models/Section');
+const Lecture = require('../models/Lecture');
 
 // Lấy tất cả các section
 const getAll = async (req, res) => {
     try {
-        const sections = await Section.find().populate('courseId').populate('lectures');
+        const sections = await Section.find().populate('lectures'); // Liên kết với mô hình Lecture
         return res.status(200).json({
             message: 'Successfully fetched all sections',
             statusCode: 200,
@@ -19,22 +20,73 @@ const getAll = async (req, res) => {
     }
 };
 
-// Thêm mới một section
-const create = async (req, res) => {
+// Lấy thông tin chi tiết một section theo ID
+const getOne = async (req, res) => {
     try {
-        const { title, courseId, lectures } = req.body;
+        const { id } = req.params;
 
-        if (!title || !courseId || !lectures) {
+        // Kiểm tra tính hợp lệ của ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                message: 'Title, courseId, and lectures are required',
+                message: 'Invalid section ID',
                 statusCode: 400,
                 data: {},
             });
         }
 
+        // Tìm section theo ID và populate các trường liên kết
+        const section = await Section.findById(id).populate('lectures'); // Liên kết với mô hình Lecture
+
+        if (!section) {
+            return res.status(404).json({
+                message: 'Section not found',
+                statusCode: 404,
+                data: {},
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Section fetched successfully',
+            statusCode: 200,
+            data: section,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Error fetching section',
+            statusCode: 500,
+            data: {},
+        });
+    }
+};
+
+// Thêm mới một section
+const create = async (req, res) => {
+    try {
+        const { title, lectures } = req.body;
+
+        // Kiểm tra nếu thiếu các trường
+        if (!title || !lectures) {
+            return res.status(400).json({
+                message: 'Title and lectures are required',
+                statusCode: 400,
+                data: {},
+            });
+        }
+
+        // Kiểm tra xem tất cả các lectures có tồn tại không
+        const lecturesExist = await Lecture.find({ _id: { $in: lectures } });
+        if (lecturesExist.length !== lectures.length) {
+            return res.status(400).json({
+                message: 'One or more lectures are invalid',
+                statusCode: 400,
+                data: {},
+            });
+        }
+
+        // Tạo mới section
         const newSection = new Section({
             title,
-            courseId,
             lectures,
         });
 
@@ -58,7 +110,7 @@ const create = async (req, res) => {
 const update = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, courseId, lectures } = req.body;
+        const { title, lectures } = req.body;
 
         const section = await Section.findById(id);
 
@@ -70,9 +122,20 @@ const update = async (req, res) => {
             });
         }
 
+        // Kiểm tra xem lectures có hợp lệ không
+        if (lectures) {
+            const lecturesExist = await Lecture.find({ _id: { $in: lectures } });
+            if (lecturesExist.length !== lectures.length) {
+                return res.status(400).json({
+                    message: 'One or more lectures are invalid',
+                    statusCode: 400,
+                    data: {},
+                });
+            }
+        }
+
         // Cập nhật dữ liệu của section
         section.title = title || section.title;
-        section.courseId = courseId || section.courseId;
         section.lectures = lectures || section.lectures;
 
         await section.save();
@@ -117,7 +180,7 @@ const deleteSection = async (req, res) => {
         }
 
         // Xóa section
-        await Section.findByIdAndDelete(id); // Dùng findByIdAndDelete thay vì remove()
+        await Section.findByIdAndDelete(id);
 
         return res.status(200).json({
             message: 'Section successfully deleted',
@@ -125,7 +188,7 @@ const deleteSection = async (req, res) => {
             data: {},
         });
     } catch (error) {
-        console.error(error); // In lỗi ra console để kiểm tra
+        console.error(error);
         return res.status(500).json({
             message: 'Error deleting section',
             statusCode: 500,
@@ -136,6 +199,7 @@ const deleteSection = async (req, res) => {
 
 module.exports = {
     getAll,
+    getOne,
     create,
     update,
     deleteSection,
