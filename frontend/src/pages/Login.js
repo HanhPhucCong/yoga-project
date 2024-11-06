@@ -16,9 +16,16 @@ function Login() {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password }
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      const { token, userId, role, name } = response.data;
+      console.log("Full response:", response);
+
+      const { token, userId, role, name } = response;
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
@@ -31,6 +38,8 @@ function Login() {
       setPassword("");
       navigate("/home");
     } catch (error) {
+      console.error("Error during login request:", error);
+      console.error("Error details:", error.response?.data);
       setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     }
   };
