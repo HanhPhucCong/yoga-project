@@ -23,18 +23,11 @@ function Register() {
         { name, email, password, dateOfBirth, address, phoneNumber, profileImage }
       );
 
-      const { userId } = response.data;
+      const { userId } = response;
       localStorage.setItem("userId", userId);
 
       setUser({ name });
       alert("Đăng ký thành công!");
-      setName("");
-      setEmail("");
-      setPassword("");
-      setDateOfBirth("");
-      setAddress("");
-      setPhoneNumber("");
-      setProfileImage("");
       navigate("/login");
     } catch (error) {
       setError("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");

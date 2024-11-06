@@ -6,6 +6,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const { verifyToken, verifyRole } = require('./controllers/authMiddleware');
 const sectionRoutes = require('./routes/sectionRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 
@@ -24,9 +25,20 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log('Error connecting to MongoDB:', err));
 
-app.use("/api/users", userRoutes); 
+
+
+// Route không yêu cầu xác thực
 app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
+app.use('/api/users', userRoutes);
+
+// Route chỉ dành cho user
+
+// Route chỉ dành cho admin
+
+
+// Route cho cả admin và user
+
 app.use('/api/course', courseRoutes);
 app.use('/api/section', sectionRoutes);
 app.use('/api/category', categoryRoutes);

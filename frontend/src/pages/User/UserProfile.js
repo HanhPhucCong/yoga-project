@@ -18,9 +18,9 @@ function UserProfile() {
       if (!userId) return;
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/users/${userId}`
+          `http://localhost:5000/api/users/${userId}`,
         );
-        setUserData(response.data);
+        setUserData(response);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu người dùng:", error);
       }
