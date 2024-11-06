@@ -15,3 +15,5 @@ const courseSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Course', courseSchema);
+
+// thứ tự tạo là Category -> Course -> Section -> Lecture

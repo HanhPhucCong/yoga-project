@@ -12,7 +12,7 @@ const Order = require('./models/Order');
 
 // Kết nối đến MongoDB
 mongoose
-    .connect('mongodb://localhost:27017/courses-yoga', {
+    .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
