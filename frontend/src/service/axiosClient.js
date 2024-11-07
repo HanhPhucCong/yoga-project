@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const axiosClient = axios.create({
     baseURL: 'http://localhost:5000/api',
@@ -11,30 +12,42 @@ const axiosClient = axios.create({
 // Add a request interceptor
 axiosClient.interceptors.request.use(
     function (config) {
-        // Do something before request is sent
         const token = localStorage.getItem('token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
-
         return config;
     },
     function (error) {
-        // Do something with request error
         return Promise.reject(error);
     }
 );
 
 // Add a response interceptor
-axios.interceptors.response.use(
+axiosClient.interceptors.response.use(
     function (response) {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
         return response.data;
     },
     function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
+        if (error.response) {
+            const { status, data } = error.response;
+
+            // Lấy message từ response hoặc đặt message mặc định nếu không có
+            const message = data.message || 'An error occurred. Please try again.';
+
+            if (status === 401) {
+                toast.error(message || 'Unauthorized: Please log in to continue.');
+            } else if (status === 403) {
+                toast.error(message || 'Forbidden: You do not have permission to access this resource.');
+            } else if (status === 400) {
+                toast.error(message || 'Bad Request: Please check your input.');
+            } else {
+                toast.error(message); // Sử dụng message từ BE hoặc hiển thị lỗi chung
+            }
+        } else {
+            toast.error('Network Error: Please check your connection.');
+        }
+
         return Promise.reject(error);
     }
 );

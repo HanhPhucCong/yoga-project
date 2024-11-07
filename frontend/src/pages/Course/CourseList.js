@@ -2,16 +2,21 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import courseApi from '../../service/courseApi';
 import '../../assets/css/Course/course.css';
+import enrollmentApi from '../../service/enrollmentApi';
 
 function CourseList() {
     const [courses, setCourses] = useState([]);
+
+    const handleDetailClick = async () => {
+        toast.info('click detail');
+    };
 
     const getCourses = async () => {
         try {
             const coursesResponse = await courseApi.getAll();
             console.log(coursesResponse.data);
             toast.success(coursesResponse.message); // Hiển thị thông báo
-            setCourses(coursesResponse.data.data); // Lưu danh sách khóa học vào state
+            setCourses(coursesResponse.data); // Lưu danh sách khóa học vào state
         } catch (err) {
             console.error(err);
             toast.error('Không thể tải danh sách khóa học.');
@@ -38,7 +43,9 @@ function CourseList() {
                                 <h2 className='course-title'>{course.title}</h2>
                                 <p className='course-description'>{course.description}</p>
                                 <p className='course-price'>{`$${course.price}`}</p>
-                                <button className='course-button'>Xem chi tiết</button>
+                                <button className='course-button' onClick={() => handleDetailClick()}>
+                                    Xem chi tiết
+                                </button>
                             </div>
                         </div>
                     ))
